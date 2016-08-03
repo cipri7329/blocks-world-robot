@@ -1,8 +1,20 @@
 # blocks-world-robot
-a robot manipulating containers in a wharehouse
+a robot manipulating containers in a warehouse
 
 ### english version
 
+* A robot manipulates containers in a warehouse.
+* Containers are stacked ontop of each other.
+* Each container has a name.
+* The robot can receive commands of type "move b1 b2" which means move b1 over b2.
+* Containers can be moved only if there no other containers above. If there are, those stacked above have to be moved also.
+* Another possible command can be "fill b 50" which means fill container b with a volume of 50l.
+* The container's filling cap is above, therefore the container should have no other containers above in order to be filled.
+* The warehouse's ground floor space is limited.
+* The containers' stack height is limited.
+* The robot can also receive commands of type undo/redo which refer to the initial commands received and not at the additional moves implied by those commands.
+
+* The requirements: design the robot.
 
 ### romanian version
 
