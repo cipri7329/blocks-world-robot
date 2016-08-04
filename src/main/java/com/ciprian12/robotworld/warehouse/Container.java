@@ -37,6 +37,15 @@ public class Container implements IContainer {
     }
 
     @Override
+    public boolean fillWith(int amount) {
+        if(amount <= getFreeCapacity()){
+            content += amount;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public int getFreeCapacity() {
         return size - content;
     }

@@ -24,6 +24,7 @@ public interface IContainer {
      */
     public int getFilledCapacity();
 
+    public boolean fillWith(int amount);
 
     /**
      *

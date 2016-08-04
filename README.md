@@ -5,7 +5,7 @@ a robot manipulating containers in a warehouse
 
 * A robot manipulates containers in a warehouse.
 
-* Containers are stacked ontop of each other.
+* Containers are stacked on top of each other.
 * Each container has a name.
 * The robot can receive commands of type "move b1 b2" which means move b1 over b2.
 * Containers can be moved only if there no other containers above. If there are, those stacked above have to be moved also.

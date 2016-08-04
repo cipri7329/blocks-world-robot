@@ -8,6 +8,11 @@ package com.ciprian12.robotworld.warehouse;
  */
 public interface IWareHouse {
 
+    public static final String WAREHOUSE_PROPERTIES = "warehouse.properties";
+
+    public static final String STACK_NUMBER = "stack.number";
+    public static final String STACK_HEIGHT = "stack.height";
+
     /**
      * avoided the stackSize term because it's confusing. it hints to stackSize as in height
      * here stackNumber means the number of columns
@@ -24,7 +29,7 @@ public interface IWareHouse {
 
     public IContainer getContainer(int stackId);
 
-    public void putContainer(IContainer container, int stackId);
+    public boolean putContainer(IContainer container, int stackId);
 
     public int freePlacesOnStack(int stackId);
 
@@ -33,5 +38,5 @@ public interface IWareHouse {
      */
     public void addStack();
 
-    public void removeStack(int stackId) throws InsufficientSpace;
+    public boolean removeStack(int stackId) throws InsufficientSpace;
 }
