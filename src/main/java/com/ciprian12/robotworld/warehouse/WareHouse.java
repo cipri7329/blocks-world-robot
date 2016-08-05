@@ -1,7 +1,11 @@
 package com.ciprian12.robotworld.warehouse;
 
+import com.ciprian12.robotworld.exceptions.InsufficientSpace;
+import com.ciprian12.robotworld.exceptions.InvalidContainer;
+
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.HashSet;
 import java.util.Stack;
 
 /**
@@ -13,12 +17,14 @@ public class WareHouse implements IWareHouse{
     private int stackHeight;
 
     private ArrayList<Stack<IContainer>> stacks;
+    private HashSet<IContainer> containers;
 
     public WareHouse(int _stackNumber, int _stackHeight){
         this.stackHeight = _stackHeight;
         this.stackNumber = _stackNumber;
 
         stacks = new ArrayList<>();
+        containers = new HashSet<>();
         for(int i=0; i<stackNumber; i++)
             stacks.add(new Stack<>());
 
@@ -39,6 +45,7 @@ public class WareHouse implements IWareHouse{
         try {
             Stack<IContainer> stack = stacks.get(stackId);
             IContainer container = stack.pop();
+            containers.remove(container);
             container.setHorizontalPosition(-1);
             container.setVerticalPosition(-1);
             return container;
@@ -52,16 +59,21 @@ public class WareHouse implements IWareHouse{
     }
 
     @Override
-    public boolean putContainer(IContainer container, int stackId) {
+    public boolean putContainer(IContainer container, int stackId) throws InvalidContainer {
         if(container == null)
             return false;
         try {
+            if(containers.contains(container)){
+                throw new InvalidContainer("Container id already exists!");
+            }
+
             Stack<IContainer> stack = stacks.get(stackId);
             if(stack.size() < stackHeight){
                 //free space available
                 container.setHorizontalPosition(stackId);
                 container.setVerticalPosition(stack.size());
                 stack.push(container);
+                containers.add(container);
                 return true;
             }
             else {

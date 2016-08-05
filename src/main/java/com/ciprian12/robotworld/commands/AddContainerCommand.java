@@ -1,9 +1,9 @@
 package com.ciprian12.robotworld.commands;
 
+import com.ciprian12.robotworld.exceptions.InvalidContainer;
 import com.ciprian12.robotworld.warehouse.IContainer;
 import com.ciprian12.robotworld.warehouse.IWareHouse;
 
-import java.util.Objects;
 
 /**
  * Created by cipri on 8/4/16.
@@ -20,8 +20,29 @@ public class AddContainerCommand implements IContainerCommand {
         this.wareHouse = wareHouse;
     }
 
+    public AddContainerCommand(IWareHouse wareHouse, IContainer container){
+        this.container = container;
+        this.stackId = -1;
+        this.wareHouse = wareHouse;
+    }
+
     @Override
-    public boolean execute() {
+    public String type() {
+        return "add";
+    }
+
+    @Override
+    public boolean execute() throws InvalidContainer {
+        if(stackId == -1){
+            //find the first empty stack
+            for(int stack=0; stack<wareHouse.getStackNumber(); stack++){
+                if(wareHouse.freePlacesOnStack(stack) > 0){
+                    stackId = stack;
+                    break;
+                }
+            }
+        }
+        //addition might still fail if no empty stack found
         return wareHouse.putContainer(container, stackId);
     }
 
@@ -43,5 +64,11 @@ public class AddContainerCommand implements IContainerCommand {
         if(!other.container.equals(this.container))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString(){
+        String result = String.format(" %s %s %s", type(), container, stackId);
+        return result;
     }
 }

@@ -17,6 +17,11 @@ public class FillContainerCommand implements IContainerCommand {
     }
 
     @Override
+    public String type() {
+        return "fill";
+    }
+
+    @Override
     public boolean execute() {
         return container.fillWith(amount);
     }
@@ -39,5 +44,11 @@ public class FillContainerCommand implements IContainerCommand {
         if(!other.container.equals(this.container))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString(){
+        String result = String.format(" %s %s %s", type(), container, amount);
+        return result;
     }
 }

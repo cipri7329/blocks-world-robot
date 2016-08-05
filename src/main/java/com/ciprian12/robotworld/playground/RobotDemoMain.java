@@ -1,5 +1,6 @@
-package com.ciprian12.robotworld;
+package com.ciprian12.robotworld.playground;
 
+import com.ciprian12.robotworld.utils.CommandsReader;
 import com.ciprian12.robotworld.utils.ConfigurationRobotWorld;
 import com.ciprian12.robotworld.warehouse.IWareHouse;
 import com.ciprian12.robotworld.warehouse.WareHouse;
@@ -19,12 +20,13 @@ public class RobotDemoMain {
             return;
         }
 
-        startDemo();
+        String commandsFile = args[0];
+        startDemo(commandsFile);
 
     }
 
 
-    private static void startDemo(){
+    private static void startDemo(String commandsFile){
 
         ConfigurationRobotWorld configurationRobotWorld = ConfigurationRobotWorld.instance();
 
@@ -35,6 +37,7 @@ public class RobotDemoMain {
 
 //        IWareHouse wareHouse = new WareHouse(stackNumber, stackHeight);
 
+        CommandsReader.readCommands(commandsFile);
 
     }
 

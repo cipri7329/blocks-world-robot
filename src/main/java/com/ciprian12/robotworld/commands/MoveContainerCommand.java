@@ -1,5 +1,6 @@
 package com.ciprian12.robotworld.commands;
 
+import com.ciprian12.robotworld.exceptions.InvalidContainer;
 import com.ciprian12.robotworld.warehouse.IContainer;
 import com.ciprian12.robotworld.warehouse.IWareHouse;
 
@@ -19,7 +20,12 @@ public class MoveContainerCommand implements IContainerCommand {
     }
 
     @Override
-    public boolean execute() {
+    public String type() {
+        return "move";
+    }
+
+    @Override
+    public boolean execute() throws InvalidContainer {
         IContainer container = wareHouse.getContainer(fromStackId);
         boolean status = wareHouse.putContainer(container, toStackId);
         if(!status){
@@ -48,5 +54,11 @@ public class MoveContainerCommand implements IContainerCommand {
         if(other.toStackId != this.toStackId)
             return false;
         return true;
+    }
+
+    @Override
+    public String toString(){
+        String result = String.format(" %s %s %s", type(), fromStackId, toStackId);
+        return result;
     }
 }

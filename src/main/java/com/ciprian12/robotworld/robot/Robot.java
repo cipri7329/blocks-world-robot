@@ -1,6 +1,7 @@
 package com.ciprian12.robotworld.robot;
 
 import com.ciprian12.robotworld.commands.IContainerCommand;
+import com.ciprian12.robotworld.warehouse.IWareHouse;
 
 import java.util.Stack;
 
@@ -9,17 +10,31 @@ import java.util.Stack;
  */
 public class Robot {
 
-    private Stack<IContainerCommand> commandsMemory;
+    private Stack<IContainerCommand> intermmediateCommandsMemory;
+    private Stack<IContainerCommand> originalCommandsMemory;
 
-    public Robot(){
-        commandsMemory = new Stack<>();
+    private IWareHouse wareHouse;
+
+    public Robot(IWareHouse wareHouse){
+        this.wareHouse = wareHouse;
+
+        intermmediateCommandsMemory = new Stack<>();
+        originalCommandsMemory = new Stack<>();
     }
 
     public void storeCommand(IContainerCommand command){
-        commandsMemory.push(command);
+        originalCommandsMemory.push(command);
     }
 
     public void executeCommands(){
+
+    }
+
+    public void executeNextCommand(){
+
+    }
+
+    public void undoCommand(){
 
     }
 

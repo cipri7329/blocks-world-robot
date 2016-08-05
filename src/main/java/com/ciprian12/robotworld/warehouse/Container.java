@@ -12,6 +12,15 @@ public class Container implements IContainer {
     private int verticalPosition;
     private int horizontalPosition;
 
+    public Container(String _name){
+        this.name = _name;
+        this.size = 0;
+
+        this.content = 0;
+        this.verticalPosition = -1;
+        this.horizontalPosition = -1;
+    }
+
     public Container(String _name, int _size){
         this.name = _name;
         this.size = _size;
@@ -68,5 +77,29 @@ public class Container implements IContainer {
     @Override
     public void setVerticalPosition(int verticalPosition) {
         this.verticalPosition = verticalPosition;
+    }
+
+    @Override
+    public int hashCode(){
+        return name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o == null)
+            return false;
+        if( !(o instanceof Container))
+            return false;
+        Container other = (Container) o;
+        if(!other.name.equals(this.name)){
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public String toString(){
+        return name;
     }
 }

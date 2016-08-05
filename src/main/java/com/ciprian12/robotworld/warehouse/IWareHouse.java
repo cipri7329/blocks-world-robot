@@ -1,5 +1,8 @@
 package com.ciprian12.robotworld.warehouse;
 
+import com.ciprian12.robotworld.exceptions.InsufficientSpace;
+import com.ciprian12.robotworld.exceptions.InvalidContainer;
+
 /**
  * Created by cipri on 8/3/16.
  *
@@ -29,7 +32,7 @@ public interface IWareHouse {
 
     public IContainer getContainer(int stackId);
 
-    public boolean putContainer(IContainer container, int stackId);
+    public boolean putContainer(IContainer container, int stackId) throws InvalidContainer;
 
     public int freePlacesOnStack(int stackId);
 

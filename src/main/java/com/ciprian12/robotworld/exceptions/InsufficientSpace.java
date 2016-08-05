@@ -1,4 +1,4 @@
-package com.ciprian12.robotworld.warehouse;
+package com.ciprian12.robotworld.exceptions;
 
 /**
  * Created by cipri on 8/3/16.

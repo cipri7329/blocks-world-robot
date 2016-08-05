@@ -1,11 +1,25 @@
-
 #comment
+*comment
 
-add a1 1
-add a2 2
-add a3 3
-add a4 4
+* add <container-id> <size>- adds the container with <container-id> name of <size> to the first available stack
+* add <container-id> <size> <stack-id> - adds the container to the stack with the given id
 
-mv b1 b2
-mv a1 a2
-fill a3
+* top <container-id> - shuffles the containers such that <container-id> is a the top of a stack
+* top <container-1> <container-2> - shuffles the containers such that <container-1> and <container-2> are at the top of two different stacks
+
+* move <container-1> <container-2> - moves <container-1> over <container-2>
+
+* fill <container-id> <amount> - fills the <container-id> with the given <amount>
+
+* undo - goes back to the previous given command. intermmediate steps are not considered commands
+* redo - reexecutes the last given command. intermmediate steps are not considered commands
+
+* stacks are 0-based indexed
+
+add a1 0
+add a2 0
+add b1 1
+
+# mv b1 b2
+# mv a1 a2
+# fill a3
