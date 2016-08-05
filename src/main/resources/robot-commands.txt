@@ -16,10 +16,12 @@
 
 * stacks are 0-based indexed
 
-add a1 0
-add a2 0
-add b1 1
+add a1 10
+add a2 10
+add b1 20 1
+add b2 20 1
 
-# mv b1 b2
-# mv a1 a2
-# fill a3
+# move b1 b2
+# move a1 a2
+
+# fill a3 10

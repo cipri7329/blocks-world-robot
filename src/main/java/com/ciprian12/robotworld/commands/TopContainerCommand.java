@@ -9,16 +9,16 @@ import com.ciprian12.robotworld.warehouse.IWareHouse;
 public class TopContainerCommand implements IContainerCommand {
 
     private IWareHouse wareHouse;
-    private IContainer container1;
-    private IContainer container2;
+    private String container1;
+    private String container2;
 
-    public TopContainerCommand(IWareHouse wareHouse, IContainer container){
+    public TopContainerCommand(IWareHouse wareHouse, String container){
         this.container1 = container;
         this.wareHouse = wareHouse;
         this.container2 = null;
     }
 
-    public TopContainerCommand(IWareHouse wareHouse, IContainer container1, IContainer container2){
+    public TopContainerCommand(IWareHouse wareHouse, String container1, String container2){
         this.container1 = container1;
         this.container2 = container2;
         this.wareHouse = wareHouse;
@@ -36,7 +36,7 @@ public class TopContainerCommand implements IContainerCommand {
 
     @Override
     public int hashCode(){
-        int hc1 = container1.getName().hashCode() + container1.hashCode();
+        int hc1 = container1.hashCode();
         int hc2 = container2 == null ? 0 : container2.hashCode();
         return ("top" + hc1 + hc2).hashCode();
     }

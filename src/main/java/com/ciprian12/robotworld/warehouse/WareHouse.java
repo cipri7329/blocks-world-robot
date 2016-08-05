@@ -1,33 +1,32 @@
 package com.ciprian12.robotworld.warehouse;
 
-import com.ciprian12.robotworld.exceptions.InsufficientSpace;
-import com.ciprian12.robotworld.exceptions.InvalidContainer;
+import com.ciprian12.robotworld.exceptions.InsufficientSpaceException;
+import com.ciprian12.robotworld.exceptions.InvalidContainerException;
+import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.EmptyStackException;
-import java.util.HashSet;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Created by cipri on 8/3/16.
  */
 public class WareHouse implements IWareHouse{
 
+    private static final Logger logger = Logger.getLogger(WareHouse.class);
+
     private int stackNumber;
     private int stackHeight;
 
     private ArrayList<Stack<IContainer>> stacks;
-    private HashSet<IContainer> containers;
+    private HashMap<String, IContainer> containers;
 
     public WareHouse(int _stackNumber, int _stackHeight){
         this.stackHeight = _stackHeight;
         this.stackNumber = _stackNumber;
 
         stacks = new ArrayList<>();
-        containers = new HashSet<>();
+        containers = new HashMap<>();
         for(int i=0; i<stackNumber; i++)
             stacks.add(new Stack<>());
-
     }
 
     @Override
@@ -45,7 +44,7 @@ public class WareHouse implements IWareHouse{
         try {
             Stack<IContainer> stack = stacks.get(stackId);
             IContainer container = stack.pop();
-            containers.remove(container);
+            containers.remove(container.getName());
             container.setHorizontalPosition(-1);
             container.setVerticalPosition(-1);
             return container;
@@ -59,12 +58,30 @@ public class WareHouse implements IWareHouse{
     }
 
     @Override
-    public boolean putContainer(IContainer container, int stackId) throws InvalidContainer {
+    public IContainer peekContainer(String containerId) {
+        return containers.get(containerId);
+    }
+
+    @Override
+    public IContainer peekContainer(int stackId) {
+        try{
+            return stacks.get(stackId).peek();
+        }
+        catch (IndexOutOfBoundsException e){
+            return null;
+        }
+        catch (EmptyStackException e){
+            return null;
+        }
+    }
+
+    @Override
+    public boolean putContainer(IContainer container, int stackId) throws InvalidContainerException {
         if(container == null)
             return false;
         try {
-            if(containers.contains(container)){
-                throw new InvalidContainer("Container id already exists!");
+            if(containers.containsKey(container.getName())){
+                throw new InvalidContainerException("Container id already exists!");
             }
 
             Stack<IContainer> stack = stacks.get(stackId);
@@ -73,7 +90,7 @@ public class WareHouse implements IWareHouse{
                 container.setHorizontalPosition(stackId);
                 container.setVerticalPosition(stack.size());
                 stack.push(container);
-                containers.add(container);
+                containers.put(container.getName(), container);
                 return true;
             }
             else {
@@ -103,7 +120,7 @@ public class WareHouse implements IWareHouse{
     }
 
     @Override
-    public boolean removeStack(int stackId) throws InsufficientSpace {
+    public boolean removeStack(int stackId) throws InsufficientSpaceException {
         try {
             Stack<IContainer> stack = stacks.get(stackId);
             if(stack.empty()){
@@ -111,11 +128,40 @@ public class WareHouse implements IWareHouse{
                 return true;
             }
             else {
-                throw new InsufficientSpace("Stack is not empty! Only empty stacks can be removed!");
+                throw new InsufficientSpaceException("Stack is not empty! Only empty stacks can be removed!");
             }
         }
         catch (IndexOutOfBoundsException e){
             return false;
         }
+    }
+
+    public String toString(){
+        return "";
+    }
+
+    public String stackString(){
+        String[][] matrix = new String[stackHeight][stackNumber];
+        for(int i=stackHeight-1; i>=0; i--){
+            for(int j=0; j<stackNumber; j++){
+                matrix[i][j] = "";
+            }
+        }
+
+        for(IContainer container : containers.values()){
+            int x = container.getHorizontalPosition();
+            int y = container.getVerticalPosition();
+            matrix[y][x] = container.getName();
+        }
+
+        StringBuilder result = new StringBuilder();
+        for(int i=stackHeight-1; i>=0; i--){
+            for(int j=0; j<stackNumber; j++){
+                result.append(String.format("%5s|", matrix[i][j]));
+            }
+            result.append("\n");
+        }
+
+        return result.toString();
     }
 }

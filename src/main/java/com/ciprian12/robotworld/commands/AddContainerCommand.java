@@ -1,6 +1,6 @@
 package com.ciprian12.robotworld.commands;
 
-import com.ciprian12.robotworld.exceptions.InvalidContainer;
+import com.ciprian12.robotworld.exceptions.InvalidContainerException;
 import com.ciprian12.robotworld.warehouse.IContainer;
 import com.ciprian12.robotworld.warehouse.IWareHouse;
 
@@ -32,7 +32,7 @@ public class AddContainerCommand implements IContainerCommand {
     }
 
     @Override
-    public boolean execute() throws InvalidContainer {
+    public boolean execute() throws InvalidContainerException {
         if(stackId == -1){
             //find the first empty stack
             for(int stack=0; stack<wareHouse.getStackNumber(); stack++){

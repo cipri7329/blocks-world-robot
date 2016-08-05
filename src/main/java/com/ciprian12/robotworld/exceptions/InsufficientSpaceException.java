@@ -3,9 +3,9 @@ package com.ciprian12.robotworld.exceptions;
 /**
  * Created by cipri on 8/3/16.
  */
-public class InsufficientSpace extends Exception {
+public class InsufficientSpaceException extends Exception {
 
-    public InsufficientSpace(String message){
+    public InsufficientSpaceException(String message){
         super(message);
     }
 }

@@ -8,12 +8,14 @@ import com.ciprian12.robotworld.warehouse.IWareHouse;
  */
 public class FillContainerCommand implements IContainerCommand {
 
-    private IContainer container;
+    private IWareHouse wareHouse;
+    private String containerName;
     private int amount;
 
-    public FillContainerCommand(IContainer container, int amount){
-        this.container = container;
+    public FillContainerCommand(IWareHouse wareHouse, String container, int amount){
+        this.containerName = container;
         this.amount = amount;
+        this.wareHouse = wareHouse;
     }
 
     @Override
@@ -23,12 +25,13 @@ public class FillContainerCommand implements IContainerCommand {
 
     @Override
     public boolean execute() {
+        IContainer container = wareHouse.peekContainer(containerName);
         return container.fillWith(amount);
     }
 
     @Override
     public int hashCode(){
-        return (container.hashCode() +"#" + amount).hashCode();
+        return (containerName.hashCode() +"#" + amount).hashCode();
     }
 
     @Override
@@ -41,14 +44,14 @@ public class FillContainerCommand implements IContainerCommand {
         FillContainerCommand other = (FillContainerCommand) o;
         if(other.amount != this.amount)
             return false;
-        if(!other.container.equals(this.container))
+        if(!other.containerName.equals(this.containerName))
             return false;
         return true;
     }
 
     @Override
     public String toString(){
-        String result = String.format(" %s %s %s", type(), container, amount);
+        String result = String.format(" %s %s %s", type(), containerName, amount);
         return result;
     }
 }

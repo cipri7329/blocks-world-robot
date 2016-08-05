@@ -1,7 +1,7 @@
 package com.ciprian12.robotworld.warehouse;
 
-import com.ciprian12.robotworld.exceptions.InsufficientSpace;
-import com.ciprian12.robotworld.exceptions.InvalidContainer;
+import com.ciprian12.robotworld.exceptions.InsufficientSpaceException;
+import com.ciprian12.robotworld.exceptions.InvalidContainerException;
 
 /**
  * Created by cipri on 8/3/16.
@@ -30,9 +30,23 @@ public interface IWareHouse {
     public int getStackHeight();
 
 
+    /**
+     * remove container from stack
+     * @param stackId
+     * @return
+     */
     public IContainer getContainer(int stackId);
 
-    public boolean putContainer(IContainer container, int stackId) throws InvalidContainer;
+    /**
+     * get a reference to the container with the given id
+     * @param containerId
+     * @return
+     */
+    public IContainer peekContainer(String containerId);
+
+    public IContainer peekContainer(int stackId);
+
+    public boolean putContainer(IContainer container, int stackId) throws InvalidContainerException;
 
     public int freePlacesOnStack(int stackId);
 
@@ -41,5 +55,11 @@ public interface IWareHouse {
      */
     public void addStack();
 
-    public boolean removeStack(int stackId) throws InsufficientSpace;
+    public boolean removeStack(int stackId) throws InsufficientSpaceException;
+
+    /**
+     *
+     * @return a matrix representation of the warehouse container allocation
+     */
+    public String stackString();
 }
