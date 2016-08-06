@@ -1,6 +1,7 @@
 package com.ciprian12.robotworld.robot;
 
 import com.ciprian12.robotworld.commands.IContainerCommand;
+import com.ciprian12.robotworld.exceptions.InsufficientSpaceException;
 import com.ciprian12.robotworld.exceptions.InvalidContainerException;
 import com.ciprian12.robotworld.warehouse.IWareHouse;
 import org.apache.log4j.Logger;
@@ -46,26 +47,24 @@ public class Robot {
         }
     }
 
-    public void executeCommands(){
-
+    public boolean executeCommands() throws InvalidContainerException, InsufficientSpaceException {
+        boolean status = true;
+        while(hasNextCommand())
+            status = status && executeNextCommand();
+        return status;
     }
 
-    public void executeNextCommand(){
+    public boolean executeNextCommand() throws InvalidContainerException, InsufficientSpaceException {
 
-        try {
-            IContainerCommand nextCmd = toExecuteCommands.pop();
-            nextCmd.execute();
-            logger.debug(nextCmd.toString());
-
-            executedCommands.add(nextCmd);
+        IContainerCommand nextCmd = toExecuteCommands.pop();
+        logger.debug("cmd: " + nextCmd.toString());
+        boolean status = nextCmd.execute();
+        if(!status){
+            //TODO: implement revert
         }
-        catch (NoSuchElementException e){
-            logger.info("all commands have been executed");
-        } catch (InvalidContainerException e) {
-            logger.warn(e.getMessage());
-        }
+        executedCommands.add(nextCmd);
 
-        logger.debug("\n" + wareHouse.stackString());
+        return status;
     }
 
     public void undoCommand(){

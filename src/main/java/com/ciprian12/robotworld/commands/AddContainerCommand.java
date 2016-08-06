@@ -3,12 +3,16 @@ package com.ciprian12.robotworld.commands;
 import com.ciprian12.robotworld.exceptions.InvalidContainerException;
 import com.ciprian12.robotworld.warehouse.IContainer;
 import com.ciprian12.robotworld.warehouse.IWareHouse;
+import org.apache.log4j.Logger;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 /**
  * Created by cipri on 8/4/16.
  */
 public class AddContainerCommand implements IContainerCommand {
+
+    private static final Logger logger = Logger.getLogger(AddContainerCommand.class);
 
     private IWareHouse wareHouse;
     private IContainer container;
@@ -33,6 +37,7 @@ public class AddContainerCommand implements IContainerCommand {
 
     @Override
     public boolean execute() throws InvalidContainerException {
+        logger.debug("execute: " + toString());
         if(stackId == -1){
             //find the first empty stack
             for(int stack=0; stack<wareHouse.getStackNumber(); stack++){
@@ -43,7 +48,14 @@ public class AddContainerCommand implements IContainerCommand {
             }
         }
         //addition might still fail if no empty stack found
-        return wareHouse.putContainer(container, stackId);
+        boolean status = wareHouse.putContainer(container, stackId);
+        logger.debug(toString() + "\n" + wareHouse.stackString());
+        return status;
+    }
+
+    @Override
+    public boolean revert() {
+        throw new NotImplementedException();
     }
 
     @Override

@@ -60,22 +60,22 @@ public class Container implements IContainer {
     }
 
     @Override
-    public int getHorizontalPosition() {
+    public int getStackId() {
         return horizontalPosition;
     }
 
     @Override
-    public void setHorizontalPosition(int horizontalPosition) {
+    public void setStackId(int horizontalPosition) {
         this.horizontalPosition = horizontalPosition;
     }
 
     @Override
-    public int getVerticalPosition() {
+    public int getStackHeightPosition() {
         return verticalPosition;
     }
 
     @Override
-    public void setVerticalPosition(int verticalPosition) {
+    public void setStackHeightPosition(int verticalPosition) {
         this.verticalPosition = verticalPosition;
     }
 

@@ -37,11 +37,11 @@ public interface IContainer {
      *
      * @return the horizontal position of the container
      */
-    public int getHorizontalPosition();
+    public int getStackId();
 
-    public void setHorizontalPosition(int horizontalPosition);
+    public void setStackId(int horizontalPosition);
 
-    public int getVerticalPosition();
+    public int getStackHeightPosition();
 
-    public void setVerticalPosition(int verticalPosition);
+    public void setStackHeightPosition(int verticalPosition);
 }

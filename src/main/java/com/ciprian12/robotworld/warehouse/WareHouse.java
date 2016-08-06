@@ -45,8 +45,8 @@ public class WareHouse implements IWareHouse{
             Stack<IContainer> stack = stacks.get(stackId);
             IContainer container = stack.pop();
             containers.remove(container.getName());
-            container.setHorizontalPosition(-1);
-            container.setVerticalPosition(-1);
+            container.setStackId(-1);
+            container.setStackHeightPosition(-1);
             return container;
         }
         catch (IndexOutOfBoundsException e){
@@ -87,8 +87,8 @@ public class WareHouse implements IWareHouse{
             Stack<IContainer> stack = stacks.get(stackId);
             if(stack.size() < stackHeight){
                 //free space available
-                container.setHorizontalPosition(stackId);
-                container.setVerticalPosition(stack.size());
+                container.setStackId(stackId);
+                container.setStackHeightPosition(stack.size());
                 stack.push(container);
                 containers.put(container.getName(), container);
                 return true;
@@ -112,6 +112,15 @@ public class WareHouse implements IWareHouse{
         catch (IndexOutOfBoundsException e){
             return -1;
         }
+    }
+
+    @Override
+    public int totalFreePlaces() {
+        int total = 0;
+        for(int i=0; i<stackNumber; i++){
+            total += freePlacesOnStack(i);
+        }
+        return total;
     }
 
     @Override
@@ -149,8 +158,8 @@ public class WareHouse implements IWareHouse{
         }
 
         for(IContainer container : containers.values()){
-            int x = container.getHorizontalPosition();
-            int y = container.getVerticalPosition();
+            int x = container.getStackId();
+            int y = container.getStackHeightPosition();
             matrix[y][x] = container.getName();
         }
 

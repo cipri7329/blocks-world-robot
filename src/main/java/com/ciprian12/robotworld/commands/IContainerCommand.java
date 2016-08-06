@@ -1,5 +1,6 @@
 package com.ciprian12.robotworld.commands;
 
+import com.ciprian12.robotworld.exceptions.InsufficientSpaceException;
 import com.ciprian12.robotworld.exceptions.InvalidContainerException;
 
 /**
@@ -9,6 +10,7 @@ public interface IContainerCommand {
 
     public String type();
 
-    public boolean execute() throws InvalidContainerException;
+    public boolean execute() throws InvalidContainerException, InsufficientSpaceException;
 
+    public boolean revert() throws InvalidContainerException, InsufficientSpaceException;
 }

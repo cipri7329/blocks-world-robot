@@ -33,7 +33,7 @@ public interface IWareHouse {
     /**
      * remove container from stack
      * @param stackId
-     * @return
+     * @return remove container from stack or null if empty stack
      */
     public IContainer getContainer(int stackId);
 
@@ -44,11 +44,28 @@ public interface IWareHouse {
      */
     public IContainer peekContainer(String containerId);
 
+    /**
+     *
+     * @param stackId
+     * @return a reference to the top container on stack with id=stackId
+     */
     public IContainer peekContainer(int stackId);
 
     public boolean putContainer(IContainer container, int stackId) throws InvalidContainerException;
 
+    /**
+     *
+     * @param stackId
+     * @return the number of free places on that give stack
+     */
     public int freePlacesOnStack(int stackId);
+
+    /**
+     *
+     * @return return the total number of free places in the warehouse
+     */
+    public int totalFreePlaces();
+
 
     /**
      * add one stack to the warehouse
