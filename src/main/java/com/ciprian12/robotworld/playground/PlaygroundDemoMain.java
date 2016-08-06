@@ -45,9 +45,7 @@ public class PlaygroundDemoMain {
 
         Robot robot = new Robot(wareHouse);
 
-        for(IContainerCommand cmd : commands){
-            robot.storeCommand(cmd);
-        }
+        robot.storeCommands(commands);
 
 
     }
