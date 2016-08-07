@@ -60,9 +60,17 @@ public class TopContainerCommand implements IContainerCommand {
     }
 
     @Override
-    public boolean revert() {
-        //TODO: implement revert
-        throw new NotImplementedException();
+    public boolean revert() throws InvalidContainerException, InsufficientSpaceException {
+        while (this.executedIntermmediateSteps.size() > 0){
+            IContainerCommand cmd = this.executedIntermmediateSteps.removeLast();
+            boolean revertIntermmediateStatus = cmd.revert();
+            if(!revertIntermmediateStatus){
+                logger.debug("reverted: " + toString() + "\n" + wareHouse.stackString());
+                return revertIntermmediateStatus;
+            }
+        }
+        logger.debug("reverted: " + toString() + "\n" + wareHouse.stackString());
+        return true;
     }
 
 
@@ -82,10 +90,16 @@ public class TopContainerCommand implements IContainerCommand {
                 boolean status = moveContainer.execute();
                 executedIntermmediateSteps.add(moveContainer);
                 if(!status){
-                    //TODO: implement revert
+                    status = moveContainer.revert();
+                    executedIntermmediateSteps.removeLast();
+                    if(!status){
+                        throw new InsufficientSpaceException("revert failed!");
+                    }
                 }
-                //reuse the stack
-                stackId --;
+                else {
+                    //reuse the stack
+                    stackId--;
+                }
             }
 
             topContainer = wareHouse.peekContainer(container.getStackId());
@@ -95,113 +109,122 @@ public class TopContainerCommand implements IContainerCommand {
 
         topContainer = wareHouse.peekContainer(container.getStackId());
         if(!container.equals(topContainer)) {
-            //TODO: implement revert
+
             while (this.executedIntermmediateSteps.size() > 0){
                 IContainerCommand cmd = this.executedIntermmediateSteps.removeLast();
-                cmd.revert();
+                boolean revertStatus = cmd.revert();
+                if(!revertStatus){
+                    throw new InsufficientSpaceException("revert failed!");
+                }
             }
 
             throw new InsufficientSpaceException("not enough free space on stacks!");
         }
 
         return true;
+    }
+
+    private boolean checkOnTop(IContainer container){
+        IContainer topContainer = wareHouse.peekContainer(container.getStackId());
+        boolean onTop = container.equals(topContainer);
+        return onTop;
     }
 
     private boolean topTwoContainers() throws InvalidContainerException, InsufficientSpaceException {
 
         boolean onTop1 = false;
         IContainer container1 = wareHouse.peekContainer(container1Name);
-        int occupiedStack1 = container1.getStackId();
         boolean onTop2 = false;
         IContainer container2 = wareHouse.peekContainer(container2Name);
-        int occupiedStack2 = container2.getStackId();
 
-        if(occupiedStack1 == occupiedStack2){
-            //containers are on the same stack
-            String topName;
-            if(container1.getStackHeightPosition() > container2.getStackHeightPosition()){
-                topName = container1Name;
-            }
-            else{
-                topName = container2Name;
-            }
-            IContainerCommand topCmd = new TopContainerCommand(wareHouse, topName);
-            boolean status = topCmd.execute();
-            executedIntermmediateSteps.add(topCmd);
-            if(!status){
-                //TODO: implement revert
-            }
-            if(topName.equals(container1Name)){
-                occupiedStack1 = container1.getStackId();
-            }
-            else{
-                occupiedStack2 = container2.getStackId();
-            }
-        }
+        int stackPos = -1;
+        do{
+            onTop1 = checkOnTop(container1);
+            onTop2 = checkOnTop(container2);
 
-        IContainer topContainer1 = wareHouse.peekContainer(container1.getStackId());
-        if(container1.equals(topContainer1))
-            onTop1 = true;
-
-        IContainer topContainer2 = wareHouse.peekContainer(container2.getStackId());
-        if(container2.equals(topContainer2))
-            onTop2 = true;
-
-        if(onTop1  && onTop2){
-            return true;
-        }
-
-        for(int stackId = 0; stackId < wareHouse.getStackNumber(); stackId++){
-            if(stackId == occupiedStack1 || stackId == occupiedStack2)
-                continue;
-
-            if(wareHouse.freePlacesOnStack(stackId) > 0){
-                if(!onTop1) {
-                    IContainerCommand moveContainer = new MoveContainerCommand(wareHouse, occupiedStack1, stackId);
-                    moveContainer.execute();
-                    occupiedStack2 = container2.getStackId();
-                    boolean status = executedIntermmediateSteps.add(moveContainer);
-
-                    if(!status){
-                        //TODO: implement revert
-                    }
-                    //reuse the stack
-                    stackId--;
-                }
-                else{
-                    if(!onTop2) {
-                        IContainerCommand moveContainer = new MoveContainerCommand(wareHouse, occupiedStack2, stackId);
-                        moveContainer.execute();
-                        occupiedStack1 = container1.getStackId();
-                        boolean status = executedIntermmediateSteps.add(moveContainer);
-
-                        if(!status){
-                            //TODO: implement revert
-                        }
-                        //reuse the stack
-                        stackId--;
-                    }
-                }
+            if(onTop1  && onTop2){
+                return true;
             }
 
-            topContainer1 = wareHouse.peekContainer(container1.getStackId());
-            if(container1.equals(topContainer1))
-                onTop1 = true;
-
-            topContainer2 = wareHouse.peekContainer(container2.getStackId());
-            if(container2.equals(topContainer2))
-                onTop2 = true;
-
-            if(onTop1 && onTop2)
-                break;
-        }
-
-
-        if(!(onTop1 && onTop2)) {
-            //TODO: implement revert
             while (this.executedIntermmediateSteps.size() > 0){
                 IContainerCommand cmd = this.executedIntermmediateSteps.removeLast();
-                cmd.revert();
+                boolean revertStatus = cmd.revert();
+                if(!revertStatus){
+                    throw new InsufficientSpaceException("revert failed!");
+                }
+            }
+
+            stackPos ++;
+            if(stackPos == wareHouse.getStackNumber()){
+                break;
+            }
+
+            for(int index = 0; index <= wareHouse.getStackNumber(); index++){
+                int stackId = (stackPos + index) % wareHouse.getStackNumber();
+
+                if(wareHouse.freePlacesOnStack(stackId) > 0){
+
+                    if(!onTop1) {
+                        if(container2.getStackId() == stackId)
+                            continue;
+
+                        IContainerCommand moveContainer = new MoveContainerCommand(wareHouse, container1.getStackId(), stackId);
+                        boolean status = moveContainer.execute();
+                        executedIntermmediateSteps.add(moveContainer);
+
+                        if(!status){
+                            status = moveContainer.revert();
+                            executedIntermmediateSteps.removeLast();
+                            if(!status){
+                                throw new InsufficientSpaceException("revert failed!");
+                            }
+                        }
+                        else {
+                            //reuse the stack
+                            index--;
+                            continue;
+                        }
+                    }
+
+                    if(!onTop2) {
+                        if(container1.getStackId() == stackId)
+                            continue;
+
+                        IContainerCommand moveContainer = new MoveContainerCommand(wareHouse, container2.getStackId(), stackId);
+                        boolean status = moveContainer.execute();
+                        executedIntermmediateSteps.add(moveContainer);
+
+                        if(!status){
+                            status = moveContainer.revert();
+                            executedIntermmediateSteps.removeLast();
+                            if(!status){
+                                throw new InsufficientSpaceException("revert failed!");
+                            }
+                        }
+                        else {
+                            //reuse the stack
+                            index--;
+                        }
+                    }
+                }
+
+                onTop1 = checkOnTop(container1);
+                onTop2 = checkOnTop(container2);
+
+                if(onTop1  && onTop2){
+                    return true;
+                }
+            }
+
+        }while(!(onTop1 && onTop2) && (this.executedIntermmediateSteps.size() > 0));
+
+        if(!(onTop1 && onTop2)) {
+            while (this.executedIntermmediateSteps.size() > 0){
+                IContainerCommand cmd = this.executedIntermmediateSteps.removeLast();
+                boolean revertStatus = cmd.revert();
+                if(!revertStatus){
+                    throw new InsufficientSpaceException("revert failed!");
+                }
             }
 
             throw new InsufficientSpaceException("not enough free space on stacks!");
@@ -209,7 +232,6 @@ public class TopContainerCommand implements IContainerCommand {
 
         return true;
     }
-
 
 
     @Override

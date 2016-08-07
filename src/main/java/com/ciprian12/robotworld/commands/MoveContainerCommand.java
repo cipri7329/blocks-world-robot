@@ -5,7 +5,8 @@ import com.ciprian12.robotworld.exceptions.InvalidContainerException;
 import com.ciprian12.robotworld.warehouse.IContainer;
 import com.ciprian12.robotworld.warehouse.IWareHouse;
 import org.apache.log4j.Logger;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.util.LinkedList;
 
 /**
  * Created by cipri on 8/4/16.
@@ -13,6 +14,8 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class MoveContainerCommand implements IContainerCommand {
 
     private static final Logger logger = Logger.getLogger(MoveContainerCommand.class);
+
+    private LinkedList<IContainerCommand> executedIntermmediateSteps;
 
     private IWareHouse wareHouse;
     private int fromStackId;
@@ -32,6 +35,7 @@ public class MoveContainerCommand implements IContainerCommand {
         this.toStackId = toStackId;
 
         this.isByStackId = true;
+        this.executedIntermmediateSteps = new LinkedList<>();
 
         try {
             this.container1Name = wareHouse.peekContainer(fromStackId).getName();
@@ -48,6 +52,7 @@ public class MoveContainerCommand implements IContainerCommand {
         this.container2Name = container2;
 
         this.isByStackId = false;
+        this.executedIntermmediateSteps = new LinkedList<>();
 
         this.fromStackId=-1;
         this.toStackId=-1;
@@ -59,7 +64,7 @@ public class MoveContainerCommand implements IContainerCommand {
     }
 
     @Override
-    public boolean execute() throws InvalidContainerException {
+    public boolean execute() throws InvalidContainerException, InsufficientSpaceException {
         logger.debug("execute: " + toString());
         boolean status;
         if(isByStackId){
@@ -72,14 +77,21 @@ public class MoveContainerCommand implements IContainerCommand {
         return status;
     }
 
-    private boolean moveByContainerName(){
+    private boolean moveByContainerName() throws InvalidContainerException, InsufficientSpaceException {
         this.container1 = wareHouse.peekContainer(this.container1Name);
         this.container2 = wareHouse.peekContainer(this.container2Name);
 
-        throw new NotImplementedException();
+
+        IContainerCommand topCmd = new TopContainerCommand(wareHouse, this.container1Name, this.container2Name);
+        boolean status = topCmd.execute();
+        if(status){
+            executedIntermmediateSteps.add(topCmd);
+        }
+
+        return status;
     }
 
-    private boolean moveByStackId() throws InvalidContainerException {
+    private boolean moveByStackId() throws InvalidContainerException, InsufficientSpaceException {
         IContainer container = wareHouse.getContainer(fromStackId);
         if(container == null)
             return false;
@@ -87,8 +99,12 @@ public class MoveContainerCommand implements IContainerCommand {
         boolean status = wareHouse.putContainer(container, toStackId);
         if(!status){
             //put the container back
-            wareHouse.putContainer(container, fromStackId);
+            status = wareHouse.putContainer(container, fromStackId);
         }
+        if(!status){
+            throw new InsufficientSpaceException("move back container - revert failed!");
+        }
+
         return status;
     }
 
@@ -97,10 +113,21 @@ public class MoveContainerCommand implements IContainerCommand {
         logger.debug("revert: " + toString());
         if(isByStackId){
             IContainerCommand cmd = new MoveContainerCommand(wareHouse, toStackId, fromStackId);
-            return cmd.execute();
+            boolean status = cmd.execute();
+            logger.debug("reverted: " + toString() + "\n" + wareHouse.stackString());
+            return status;
         }
         else{
-            throw new NotImplementedException();
+            boolean revertStatus = true;
+            while(executedIntermmediateSteps.size() > 0){
+                IContainerCommand cmd = executedIntermmediateSteps.removeLast();
+                revertStatus = cmd.revert();
+                if(!revertStatus){
+                    throw new InsufficientSpaceException("revert failed");
+                }
+            }
+            logger.debug("reverted: " + toString() + "\n" + wareHouse.stackString());
+            return revertStatus;
         }
 
     }

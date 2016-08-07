@@ -61,8 +61,15 @@ public class Robot {
         boolean status = nextCmd.execute();
         if(!status){
             //TODO: implement revert
+            boolean revertStatus = nextCmd.revert();
+            logger.info(String.format("cmd failed: %s reverted status: %s", nextCmd, revertStatus));
+            if(revertStatus){
+                //TODO:
+            }
         }
-        executedCommands.add(nextCmd);
+        else {
+            executedCommands.add(nextCmd);
+        }
 
         return status;
     }

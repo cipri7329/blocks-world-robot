@@ -19,26 +19,27 @@ import static org.junit.Assert.*;
  */
 public class RobotTest {
 
-    @Test
-    public void simpleMove() throws InvalidContainerException, InsufficientSpaceException {
+//    @Test
+//    public void simpleMove() throws InvalidContainerException, InsufficientSpaceException {
+//
+//        List<String> commandsInput = new ArrayList<String>(){{
+//            add("add a1 10");
+//            add("add a2 10");
+//            add("add b1 20 1");
+//
+//            add("move a1 b1");
+//        }};
+//        IWareHouse wareHouse = new WareHouse(5, 4);
+//        List<IContainerCommand> commands = CommandsReader.readCommands(commandsInput.stream(), wareHouse);
+//
+//        System.out.print(wareHouse.stackString());
+//
+//        Robot robot = new Robot(wareHouse);
+//
+//        robot.storeCommands(commands);
+//        assertTrue(robot.executeCommands());
+//    }
 
-        List<String> commandsInput = new ArrayList<String>(){{
-            add("add a1 10");
-            add("add a2 10");
-            add("add b1 20 1");
-
-            add("move a1 b1");
-        }};
-        IWareHouse wareHouse = new WareHouse(5, 4);
-        List<IContainerCommand> commands = CommandsReader.readCommands(commandsInput.stream(), wareHouse);
-
-        System.out.print(wareHouse.stackString());
-
-        Robot robot = new Robot(wareHouse);
-
-        robot.storeCommands(commands);
-        robot.executeCommands();
-    }
 
     @Test
     public void top1Simple() throws InvalidContainerException, InsufficientSpaceException {
@@ -88,6 +89,38 @@ public class RobotTest {
 
         assertTrue(robot.executeCommands());
     }
+
+
+    @Test
+    public void top1OneFreePlace2() throws InvalidContainerException, InsufficientSpaceException {
+
+        int stackNumber = 3;
+        int stackHeight = 3;
+
+        List<String> commandsInput = new ArrayList<String>(){{
+            add("add a1 10");
+            add("add a2 10");
+
+            add("add b1 20 1");
+            add("add b2 20 1");
+            add("add b3 20 1");
+
+            add("add c1 20 2");
+
+            add("top a1");
+        }};
+        IWareHouse wareHouse = new WareHouse(stackNumber, stackHeight);
+        List<IContainerCommand> commands = CommandsReader.readCommands(commandsInput.stream(), wareHouse);
+
+        System.out.print(wareHouse.stackString());
+
+        Robot robot = new Robot(wareHouse);
+
+        robot.storeCommands(commands);
+
+        assertTrue(robot.executeCommands());
+    }
+
 
     @Test (expected = InsufficientSpaceException.class)
     public void top1InsufficientSpace() throws InvalidContainerException, InsufficientSpaceException {
@@ -140,6 +173,7 @@ public class RobotTest {
 
         assertTrue(robot.executeCommands());
     }
+
 
     @Test
     public void top2SameStack() throws InvalidContainerException, InsufficientSpaceException {
