@@ -1,6 +1,8 @@
 # blocks-world-robot
 a robot manipulating containers in a warehouse
 
+!!! incomplete solution !!!
+
 ### english version
 
 * A robot manipulates containers in a warehouse.
